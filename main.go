@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 	"runtime"
 	"strconv"
+
+	"github.com/nickorta12/adventofcode2021/aoc"
 )
 
 const main_template string = `package main
@@ -57,18 +59,13 @@ func TestPart2(t *testing.T) {
 }
 `
 
-func fatal(format string, s ...any) {
-	fmt.Printf(format+"\n", s...)
-	os.Exit(1)
-}
-
 func pathExists(name string) bool {
 	if _, err := os.Stat(name); err == nil {
 		return true
 	} else if errors.Is(err, os.ErrNotExist) {
 		return false
 	} else {
-		fatal("Error for path %s: %s", name, err)
+		aoc.Fatal("Error for path %s: %s", name, err)
 	}
 
 	return false
@@ -76,17 +73,17 @@ func pathExists(name string) bool {
 
 func main() {
 	if len(os.Args) != 2 {
-		fatal("./adventofcode2021 DAY")
+		aoc.Fatal("./adventofcode2021 DAY")
 	}
 	day, err := strconv.Atoi(os.Args[1])
 	dayStr := fmt.Sprintf("%02d", day)
 	if err != nil {
-		fatal("Error: %s", err)
+		aoc.Fatal("Error: %s", err)
 	}
 
 	_, filename, _, ok := runtime.Caller(0)
 	if !ok {
-		fatal("No caller info")
+		aoc.Fatal("No caller info")
 	}
 	dir := filepath.Dir(filename)
 	binDir := filepath.Join(dir, "days", dayStr)
@@ -96,30 +93,30 @@ func main() {
 	testPath := filepath.Join(binDir, dayStr+"_test.go")
 
 	if pathExists(binPath) || pathExists(testPath) {
-		fatal("Code for day %d already exists", day)
+		aoc.Fatal("Code for day %d already exists", day)
 	}
 
 	if pathExists(inputPath) {
-		fatal("Input for day %d already exists", day)
+		aoc.Fatal("Input for day %d already exists", day)
 	}
 
 	if !pathExists(binDir) {
 		if err = os.Mkdir(binDir, 0755); err != nil {
-			fatal("Making bin dir %s: %s", binDir, err)
+			aoc.Fatal("Making bin dir %s: %s", binDir, err)
 		}
 	}
 
-	cmd := exec.Command("aoc", "-y", "2021", "-d", fmt.Sprint(day), "-i", inputPath, "download")
+	cmd := exec.Command("aoc", "-y", "2021", "-d", fmt.Sprint(), "-i", inputPath, "download")
 
 	if err = cmd.Run(); err != nil {
-		fatal("Running aoc command for input files: %s", err)
+		aoc.Fatal("Running aoc command for input files: %s", err)
 	}
 
 	if err = os.WriteFile(binPath, []byte(fmt.Sprintf(main_template, day)), 0644); err != nil {
-		fatal("Making main file %s: %s", binPath, err)
+		aoc.Fatal("Making main file %s: %s", binPath, err)
 	}
 	if err = os.WriteFile(testPath, []byte(test_template), 0644); err != nil {
-		fatal("Making test file %s: %s", testPath, err)
+		aoc.Fatal("Making test file %s: %s", testPath, err)
 	}
 
 }
