@@ -28,3 +28,29 @@ func Fatal(format string, s ...any) {
 	fmt.Printf(format+"\n", s...)
 	os.Exit(1)
 }
+
+func Lines(input string) []string {
+	return strings.Split(input, "\n")
+}
+
+func Transpose(slice []string) []string {
+	xl := len(slice[0])
+	yl := len(slice)
+	intermediate := make([][]rune, xl)
+
+	for i := 0; i < xl; i++ {
+		intermediate[i] = make([]rune, yl)
+	}
+
+	for i, line := range slice {
+		for j, char := range line {
+			intermediate[j][i] = char
+		}
+	}
+
+	result := make([]string, xl)
+	for i, chars := range intermediate {
+		result[i] = string(chars)
+	}
+	return result
+}
